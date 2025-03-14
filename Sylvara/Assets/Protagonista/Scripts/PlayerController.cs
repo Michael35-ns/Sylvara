@@ -3,10 +3,13 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
-    [Header("Movimiento")]
+
     public float moveSpeed = 2f;
     public float runSpeed = 4f;
     public float gravity = 9.8f;
+    public float attackDamage = 20f;
+
+    public Attack attack;
 
     private Vector3 moveDirection;
     private CharacterController controller;
@@ -41,6 +44,18 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Enemy"))
+        {
+            EnemyDummy enemy = other.GetComponent<EnemyDummy>();
+            if (enemy != null)
+            {
+                enemy.TakeDamage(attackDamage);
+                Debug.Log($"⚔️ Golpeaste a {other.name} e hiciste {attackDamage} de daño.");
+            }
+        }
+    }
 
     void HandleMovement()
     {
@@ -79,25 +94,28 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log("🟢 Click detectado, atacando...");
 
             SetCanMove(false);
             animator.SetFloat("Speed", 0);
             animator.SetBool("Running", false);
+            attack.SetOwner(gameObject);
 
             int currentAttack = animator.GetInteger("Attack");
 
             if (currentAttack == 0)
             {
                 animator.SetInteger("Attack", 1);
+                attack.PerformAttack();
             }
             else if (currentAttack == 1)
             {
                 animator.SetInteger("Attack", 2);
+                attack.PerformAttack();
             }
             else if (currentAttack == 2)
             {
                 animator.SetInteger("Attack", 3);
+                attack.PerformAttack();
             }
 
             animator.SetBool("PuedoDarClick", false);
@@ -107,6 +125,8 @@ public class PlayerController : MonoBehaviour
     // ---------------- GRAVEDAD ----------------
     void ApplyGravity()
     {
+        if (!controller.enabled) return;
+
         if (!controller.isGrounded)
         {
             moveDirection.y -= gravity * Time.deltaTime;

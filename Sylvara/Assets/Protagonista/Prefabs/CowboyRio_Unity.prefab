@@ -1,5 +1,70 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &199026240949129440
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7479195156750011262}
+  - component: {fileID: 4691347976644020978}
+  - component: {fileID: 4424930805856394295}
+  m_Layer: 0
+  m_Name: Hitbox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7479195156750011262
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 199026240949129440}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.051, z: -0.064}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4917888846056525266}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &4691347976644020978
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 199026240949129440}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1.5, z: 1.2}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4424930805856394295
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 199026240949129440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b7c5caa42b9c6349abbc74cc28153f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 20
+  attackRadius: 1
+  attackRange: 1
+  activeTime: 0.1
+  attackableLayers:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1 &256634370458839298
 GameObject:
   m_ObjectHideFlags: 0
@@ -1644,9 +1709,10 @@ GameObject:
   - component: {fileID: 1360075052824123304}
   - component: {fileID: 4878912030596801758}
   - component: {fileID: 2060654387361732488}
+  - component: {fileID: 4270130403330682913}
   m_Layer: 0
   m_Name: CowboyRio_Unity
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1659,13 +1725,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5725211428315354984}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.37173557, y: 1, z: -5.5235033}
+  m_LocalPosition: {x: -0.37173557, y: 2.185, z: -5.5235033}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3532369719816321885}
   - {fileID: 2790546185709606340}
   - {fileID: 9090467033375344198}
+  - {fileID: 7479195156750011262}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1702,7 +1769,7 @@ CharacterController:
   m_Enabled: 1
   serializedVersion: 2
   m_Height: 2
-  m_Radius: 0.5
+  m_Radius: 0.2
   m_SlopeLimit: 45
   m_StepOffset: 0.4
   m_SkinWidth: 0.8
@@ -1723,7 +1790,28 @@ MonoBehaviour:
   moveSpeed: 2
   runSpeed: 4
   gravity: 9.8
+  attackDamage: 20
+  attack: {fileID: 4424930805856394295}
   animator: {fileID: 1360075052824123304}
+  tieneEspada: 0
+  espadaPrefab: {fileID: 4873536435481047071, guid: 1d0f7769f552b4a3fba414d0f2254491, type: 3}
+  puntoEspada: {fileID: 3543040224124796897}
+--- !u!114 &4270130403330682913
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5725211428315354984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13191033acc5e3b48bcef36f78b6a8af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  isDead: 0
+  defense: 0
+  invulnerabilityTime: 1.5
 --- !u!1 &5987662779992243551
 GameObject:
   m_ObjectHideFlags: 0
