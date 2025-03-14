@@ -4,8 +4,8 @@ using System.Collections;
 public class AttackStateBehaviour : StateMachineBehaviour
 {
     private bool canQueueNextAttack = false;
-    private float comboResetTime = 2f;
-    private float cooldownTime = 3f;
+    private float comboResetTime = 1f;
+    private float cooldownTime = 1f;
     private float lastAttackTime;
 
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
