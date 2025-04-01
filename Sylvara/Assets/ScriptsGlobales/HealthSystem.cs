@@ -10,6 +10,8 @@ public class HealthSystem : MonoBehaviour
     public float defense = 5f;
     public float invulnerabilityTime = 1.5f;
 
+    public PlayerUI playerUI;
+
     private bool isInvulnerable = false;
     private Animator animator;
     private CharacterController controller;
@@ -17,6 +19,8 @@ public class HealthSystem : MonoBehaviour
     void Start()
     {
         currentHealth = maxHealth;
+        if (playerUI != null)
+            playerUI.UpdateHealth(currentHealth, maxHealth);
         animator = GetComponent<Animator>();
         controller = GetComponent<CharacterController>();
 //        StartCoroutine(RegenerateHealth());
@@ -30,6 +34,10 @@ public class HealthSystem : MonoBehaviour
         currentHealth -= damageTaken;
 
         currentHealth = Mathf.Max(currentHealth, 0);
+
+
+        if (playerUI != null)
+            playerUI.UpdateHealth(currentHealth, maxHealth);
 
         Debug.Log($"⚠️ {gameObject.name} recibió {damageTaken} de daño. Vida restante: {currentHealth}");
 
