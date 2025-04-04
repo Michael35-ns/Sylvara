@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08385390c81021b4599abb2042d4de8e, type: 3}
+  m_Name: Espada de Modread
+  m_EditorClassIdentifier: 
+  weaponName: Espada de Modread
+  damage: 40
+  icon: {fileID: 21300000, guid: 4e5d129b339c5b44898fc61374d8a0e4, type: 3}
+  iconSelected: {fileID: 21300000, guid: 0302e276c6152bb4690e6df2c180a129, type: 3}
+  weaponPrefab: {fileID: 2470634840418416257, guid: 8ace34a721ca34f9797b83e96f99404f, type: 3}

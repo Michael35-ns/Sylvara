@@ -1,20 +1,29 @@
-using UnityEngine;
+Ôªøusing UnityEngine;
 
 public class DarEspada : MonoBehaviour
 {
-    public GameObject espadaPrefab; // Espada que entregar·
+    public WeaponData armaQueDa;
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            PlayerController player = other.GetComponent<PlayerController>();
-            if (player != null)
+            WeaponInventory inventory = other.GetComponent<WeaponInventory>();
+            if (inventory != null)
             {
-                player.espadaPrefab = espadaPrefab; // Le asigna la espada que debe instanciar
-                player.ObtenerEspada();
-                Destroy(gameObject); // Se destruye despuÈs de dar la espada
+                int emptySlot = inventory.FindFirstEmptySlot();
+                if (emptySlot != -1)
+                {
+                    inventory.SetWeaponInSlot(armaQueDa, emptySlot);
+                    inventory.EquipWeapon(emptySlot);
+                }
+                else
+                {
+                    Debug.LogWarning("‚ö†Ô∏è Inventario lleno. No se pudo guardar el arma.");
+                }
             }
+
+            Destroy(gameObject);
         }
     }
 }
