@@ -12,16 +12,16 @@ public class FireballProjectile : MonoBehaviour
 
     void Start()
     {
-        // Ignorar colisiones con enemigos
         Physics.IgnoreLayerCollision(LayerMask.NameToLayer("EnemyProjectile"), LayerMask.NameToLayer("Enemy"));
-
-        // Autodestrucción por tiempo
+        Physics.IgnoreLayerCollision(LayerMask.NameToLayer("EnemyProjectile"), LayerMask.NameToLayer("EnemyProjectile"));
         Destroy(gameObject, lifetime);
     }
 
-    public void SetTarget(Transform playerTarget)
+    public void SetTarget(Transform playerTarget, float customSpeed = -1)
     {
         target = playerTarget;
+        if (customSpeed > 0) speed = customSpeed;
+        Destroy(gameObject, lifetime);
     }
 
     void Update()

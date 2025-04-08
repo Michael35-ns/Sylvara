@@ -592,6 +592,7 @@ MonoBehaviour:
   dashKick: {fileID: 251469476}
   fireballAttack: {fileID: 251469480}
   nukeAttack: {fileID: 251469483}
+  deathRayAttack: {fileID: 251469486}
   teleportPuffEffect: {fileID: 100008, guid: c7235ac1b5d8d874bb533f31f4e90879, type: 3}
 --- !u!143 &251469471 stripped
 CharacterController:
@@ -667,6 +668,40 @@ MonoBehaviour:
   damageArea: {fileID: 707253374}
   chargeTime: 7
   nukeDamage: 70
+--- !u!114 &251469484 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8795294398631880118, guid: 674efcbf1db177b4e9df561bef67c4d5, type: 3}
+  m_PrefabInstance: {fileID: 8795294396736675190}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 251469463}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13191033acc5e3b48bcef36f78b6a8af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &251469486
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 251469463}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bc2231a5b88cb14587eaf0203ca4dce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  castingIndicatorPrefab: {fileID: 6045127027559701486, guid: 601e33c7e7182ef408369cf5d02c32a6, type: 3}
+  rayPrefab: {fileID: 8486418194146098592, guid: c8d0ab5ce55cd104a8757439c46eec86, type: 3}
+  fireballPrefab: {fileID: 6093824534025535779, guid: bb1ad750c0c94db48aec44e8d0e06027, type: 3}
+  raySpawnPoint: {fileID: 1397531072}
+  fireballSpawnPoint: {fileID: 1397531072}
+  indicatorFollowPoint: {fileID: 1397531072}
+  chargeDuration: 5
+  rayDuration: 15
+  fireballInterval: 2
+  fireballSpeed: 6
+  rotationSpeed: 55
 --- !u!1 &284849920
 GameObject:
   m_ObjectHideFlags: 0
@@ -953,6 +988,7 @@ GameObject:
   m_Component:
   - component: {fileID: 412535292}
   - component: {fileID: 412535291}
+  - component: {fileID: 412535293}
   m_Layer: 0
   m_Name: Debug
   m_TagString: Untagged
@@ -990,6 +1026,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &412535293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 412535290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: caed8bc6299a2284291748dfce732375, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bossHealth: {fileID: 251469484}
+  triggerKey: 118
 --- !u!1 &707253371
 GameObject:
   m_ObjectHideFlags: 0
@@ -1718,8 +1768,39 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 1979932766}
-  offset: {x: 0, y: 10, z: -5}
+  offset: {x: 0, y: 15, z: -5}
   followSpeed: 5
+--- !u!1 &1397531071
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1397531072}
+  m_Layer: 6
+  m_Name: DeathRayCaster
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1397531072
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1397531071}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.5, z: 0.3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 251469479}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1434299733
 GameObject:
   m_ObjectHideFlags: 0
@@ -2438,7 +2519,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2064085850}
   m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalPosition: {x: 0, y: 17.52, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

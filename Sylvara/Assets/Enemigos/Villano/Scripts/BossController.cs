@@ -15,11 +15,16 @@ public class BossController : MonoBehaviour
     private bool isCasting = false;
     private bool isAttacking = false;
     private float attackCooldownTimer;
+    private HealthSystem healthSystem;
+
 
     [Header("Ataques del Jefe")]
     public DashKick dashKick;
     public FireballAttack fireballAttack;
     public NukeAttack nukeAttack;
+    public DeathRayAttack deathRayAttack;
+
+    private bool usedDeathRay = false;
 
     [Header("Efectos del Jefe")]
     public GameObject teleportPuffEffect;
@@ -29,6 +34,7 @@ public class BossController : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
         controller = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
+        healthSystem = GetComponent<HealthSystem>();
         attackCooldownTimer = Random.Range(4f, 7f);
     }
 
@@ -46,13 +52,26 @@ public class BossController : MonoBehaviour
 
         if (attackCooldownTimer <= 0f)
         {
-            isAttacking = true;
+            // 🔥 DeathRay tiene prioridad si no se ha usado y la vida está baja
+            if (healthSystem.GetHealth() / healthSystem.maxHealth <= 0.3f && !usedDeathRay)
+            {
+                usedDeathRay = true;
+                isAttacking = true;
+                SetCasting(true);
+                deathRayAttack.StartDeathRay(() =>
+                {
+                    isAttacking = false;
+                    SetCasting(false);
+                    attackCooldownTimer = Random.Range(4f, 7f);
+                });
+                return;
+            }
 
             // 🎲 Elegimos ataque aleatorio
+            isAttacking = true;
             int random = Random.Range(0, 100);
             if (random < 60)
             {
-                // 60%: Fireball
                 fireballAttack.CastFireball(() =>
                 {
                     isAttacking = false;
@@ -61,7 +80,6 @@ public class BossController : MonoBehaviour
             }
             else if (random < 85)
             {
-                // 25%: Dash Kick
                 dashKick.StartDash(() =>
                 {
                     isAttacking = false;
@@ -70,7 +88,6 @@ public class BossController : MonoBehaviour
             }
             else
             {
-                // 15%: Nuke
                 SetCasting(true);
                 nukeAttack.StartNuke(() =>
                 {
@@ -82,6 +99,7 @@ public class BossController : MonoBehaviour
 
             return;
         }
+
 
         UpdateMovementAndAnimation();
     }
