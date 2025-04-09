@@ -26,6 +26,12 @@ public class HealthSystem : MonoBehaviour
 //        StartCoroutine(RegenerateHealth());
     }
 
+    public void SetInvulnerable(bool value)
+    {
+        isInvulnerable = value;
+    }
+
+
     public void TakeDamage(float damage)
     {
         if (isDead || isInvulnerable) return;

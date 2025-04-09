@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
 
     public Attack attack;
 
+    public GameObject dashTrailEffect;
+
     private Vector3 moveDirection;
     private CharacterController controller;
     public Animator animator;
@@ -65,6 +67,12 @@ public class PlayerController : MonoBehaviour
         canDash = false;
         isDashing = true;
 
+        if (dashTrailEffect != null)
+        {
+            dashTrailEffect.SetActive(true);
+            dashTrailEffect.GetComponent<ParticleSystem>().Play();
+        }
+
         dashDirection = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
         if (dashDirection == Vector3.zero)
         {
@@ -82,6 +90,11 @@ public class PlayerController : MonoBehaviour
         }
 
         isDashing = false;
+
+        if (dashTrailEffect != null)
+        {
+            dashTrailEffect.SetActive(false);
+        }
 
         yield return new WaitForSeconds(dashCooldown);
         canDash = true;
