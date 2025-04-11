@@ -23,7 +23,6 @@ public class HealthSystem : MonoBehaviour
             playerUI.UpdateHealth(currentHealth, maxHealth);
         animator = GetComponent<Animator>();
         controller = GetComponent<CharacterController>();
-//        StartCoroutine(RegenerateHealth());
     }
 
     public void SetInvulnerable(bool value)
@@ -96,15 +95,6 @@ public class HealthSystem : MonoBehaviour
         if (playerUI != null)
             playerUI.UpdateHealth(currentHealth, maxHealth);
     }
-
- //   private IEnumerator RegenerateHealth()
- //   {
- //       while (!isDead)
- //       {
- //           yield return new WaitForSeconds(5f);
- //           Heal(1f);
- //       }
- //  }
 
     public float GetHealth() => currentHealth;
 }
