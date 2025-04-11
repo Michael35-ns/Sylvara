@@ -93,6 +93,8 @@ public class HealthSystem : MonoBehaviour
         if (isDead) return;
 
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+        if (playerUI != null)
+            playerUI.UpdateHealth(currentHealth, maxHealth);
     }
 
  //   private IEnumerator RegenerateHealth()

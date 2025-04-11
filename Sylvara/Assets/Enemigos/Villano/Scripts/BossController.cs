@@ -11,20 +11,21 @@ public class BossController : MonoBehaviour
     private Transform player;
     private CharacterController controller;
     private Animator animator;
+    private HealthSystem healthSystem;
 
     private bool isCasting = false;
     private bool isAttacking = false;
     private float attackCooldownTimer;
-    private HealthSystem healthSystem;
-
 
     [Header("Ataques del Jefe")]
     public DashKick dashKick;
     public FireballAttack fireballAttack;
     public NukeAttack nukeAttack;
     public DeathRayAttack deathRayAttack;
+    public BulletHellAttack bulletHellAttack;
 
     private bool usedDeathRay = false;
+    private bool isPhaseTwo = false;
 
     [Header("Efectos del Jefe")]
     public GameObject teleportPuffEffect;
@@ -44,7 +45,18 @@ public class BossController : MonoBehaviour
 
         attackCooldownTimer -= Time.deltaTime;
 
-        if (isAttacking || dashKick.IsDashing() || nukeAttack.IsCasting())
+        // Entrar a fase 2 si tiene baja vida
+        float healthRatio = healthSystem.GetHealth() / healthSystem.maxHealth;
+        bool lowHealthPhase = healthRatio <= 0.3f;
+
+        if (!isPhaseTwo && lowHealthPhase)
+        {
+            isPhaseTwo = true;
+            walkSpeed *= 1.5f;
+            runSpeed *= 1.5f;
+        }
+
+        if (isAttacking || dashKick.IsDashing() || nukeAttack.IsCasting() || deathRayAttack.IsCasting())
         {
             SetAnim("Idle");
             return;
@@ -52,11 +64,12 @@ public class BossController : MonoBehaviour
 
         if (attackCooldownTimer <= 0f)
         {
-            // 🔥 DeathRay tiene prioridad si no se ha usado y la vida está baja
-            if (healthSystem.GetHealth() / healthSystem.maxHealth <= 0.3f && !usedDeathRay)
+            isAttacking = true;
+
+            // ⚡ Lanza DeathRay por única vez si entra a fase 2
+            if (lowHealthPhase && !usedDeathRay)
             {
                 usedDeathRay = true;
-                isAttacking = true;
                 SetCasting(true);
                 deathRayAttack.StartDeathRay(() =>
                 {
@@ -68,40 +81,75 @@ public class BossController : MonoBehaviour
             }
 
             // 🎲 Elegimos ataque aleatorio
-            isAttacking = true;
             int random = Random.Range(0, 100);
-            if (random < 60)
+
+            if (!isPhaseTwo)
             {
-                fireballAttack.CastFireball(() =>
+                // Fase 1
+                if (random < 50)
                 {
-                    isAttacking = false;
-                    attackCooldownTimer = Random.Range(4f, 7f);
-                });
-            }
-            else if (random < 85)
-            {
-                dashKick.StartDash(() =>
+                    fireballAttack.CastFireball(FinishAttack);
+                }
+                else if (random < 75)
                 {
-                    isAttacking = false;
-                    attackCooldownTimer = Random.Range(4f, 7f);
-                });
+                    dashKick.StartDash(FinishAttack);
+                }
+                else if (random < 90)
+                {
+                    SetCasting(true);
+                    nukeAttack.StartNuke(FinishAttackWithCastReset);
+                }
+                else
+                {
+                    bulletHellAttack.StartBulletHell(false, FinishAttackWithCastReset);
+                    SetCasting(true);
+                }
             }
             else
             {
-                SetCasting(true);
-                nukeAttack.StartNuke(() =>
+                // Fase 2: patrón más agresivo
+                if (random < 25)
                 {
-                    isAttacking = false;
-                    SetCasting(false);
-                    attackCooldownTimer = Random.Range(4f, 7f);
-                });
+                    dashKick.StartDash(FinishAttack);
+                }
+                else if (random < 50)
+                {
+                    SetCasting(true);
+                    nukeAttack.StartNuke(FinishAttackWithCastReset);
+                }
+                else if (random < 75)
+                {
+                    bulletHellAttack.StartBulletHell(true, FinishAttackWithCastReset);
+                    SetCasting(true);
+                }
+                else if (random < 90)
+                {
+                    SetCasting(true);
+                    deathRayAttack.StartDeathRay(FinishAttackWithCastReset);
+                }
+                else
+                {
+                    fireballAttack.CastFireball(FinishAttack);
+                }
             }
 
             return;
         }
 
-
         UpdateMovementAndAnimation();
+    }
+
+    void FinishAttack()
+    {
+        isAttacking = false;
+        attackCooldownTimer = isPhaseTwo ? Random.Range(2f, 4f) : Random.Range(4f, 7f);
+    }
+
+    void FinishAttackWithCastReset()
+    {
+        isAttacking = false;
+        SetCasting(false);
+        attackCooldownTimer = isPhaseTwo ? Random.Range(2f, 4f) : Random.Range(4f, 7f);
     }
 
     public void SetCasting(bool value)

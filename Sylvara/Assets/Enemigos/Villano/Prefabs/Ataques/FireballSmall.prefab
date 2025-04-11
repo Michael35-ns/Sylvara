@@ -73,7 +73,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5356396162113603674, guid: e068a403d295c4f4f9811b2a75b7543f, type: 3}
       propertyPath: m_TagString
-      value: Untagged
+      value: Enemy
       objectReference: {fileID: 0}
     - target: {fileID: 5995186140825241276, guid: e068a403d295c4f4f9811b2a75b7543f, type: 3}
       propertyPath: m_LocalScale.x
