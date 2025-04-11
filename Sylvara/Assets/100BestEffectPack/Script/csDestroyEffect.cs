@@ -2,9 +2,24 @@
 using System.Collections;
 
 public class csDestroyEffect : MonoBehaviour {
-	
-	void Update () {
-        if (Input.GetKeyDown(KeyCode.X) || Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.C))
+
+    private ParticleSystem ps;
+
+    void Start()
+    {
+        ps = GetComponent<ParticleSystem>();
+
+        // Por seguridad, si no hay ps, destruimos luego de 5s por defecto
+        if (ps == null)
+        {
+            Destroy(gameObject, 10f);
+        }
+    }
+
+    void Update()
+    {
+        // Destruir solo si el sistema ya no está vivo (incluye subemisores)
+        if (ps != null && !ps.IsAlive(true))
         {
             Destroy(gameObject);
         }
