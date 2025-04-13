@@ -29,15 +29,7 @@ public class TorretaScript : MonoBehaviour
             // Asegurarse de que el hijo siga la rotación del padre sin desviarse
             fireParticles.transform.rotation = transform.rotation;
 
-            // Manejar la activación del Particle System
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                fireParticles.Play();
-            }
-            else if (Input.GetKeyUp(KeyCode.Space))
-            {
-                fireParticles.Stop();
-            }
+            fireParticles.Play();
         }
     }
 }
