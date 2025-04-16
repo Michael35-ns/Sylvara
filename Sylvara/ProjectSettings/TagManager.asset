@@ -5,7 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - Enemy
-  - AttackHitbox
+  - Floor
+  - Trap
   layers:
   - Default
   - TransparentFX
@@ -16,7 +17,7 @@ TagManager:
   - Enemy
   - Player
   - EnemyProjectile
-  - AttackHitbox
+  - 
   - 
   - 
   - 
