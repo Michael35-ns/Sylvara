@@ -11,6 +11,7 @@ public class EnemyBullet : MonoBehaviour
     {
         Physics.IgnoreLayerCollision(LayerMask.NameToLayer("EnemyProjectile"), LayerMask.NameToLayer("Enemy"));
         Physics.IgnoreLayerCollision(LayerMask.NameToLayer("EnemyProjectile"), LayerMask.NameToLayer("EnemyProjectile"));
+        Physics.IgnoreLayerCollision(LayerMask.NameToLayer("EnemyProjectile"), LayerMask.NameToLayer("AttackHitbox"));
 
         // Autodestrucción tras X segundos
         Destroy(gameObject, lifeTime);
