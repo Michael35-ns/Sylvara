@@ -7,9 +7,10 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed = 2f;
     public float runSpeed = 4f;
     public float gravity = 9.8f;
-    public float attackDamage = 20f;
 
     public Attack attack;
+
+    public GameObject dashTrailEffect;
 
     private Vector3 moveDirection;
     private CharacterController controller;
@@ -21,6 +22,14 @@ public class PlayerController : MonoBehaviour
     public Transform puntoEspada;
     private GameObject espadaActual;
 
+    public float dashSpeed = 12f;
+    public float dashDuration = 0.3f;
+    public float dashCooldown = 1f;
+
+    private bool isDashing = false;
+    private bool canDash = true;
+    private Vector3 dashDirection;
+
     void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -30,9 +39,18 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Space) && canDash && !isDashing)
+        {
+            StartCoroutine(DoDash());
+        }
         HandleMovement();
         HandleAttack();
         ApplyGravity();
+
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            GetComponent<WeaponInventory>().NextWeapon();
+        }
     }
 
     // ---------------- MOVIMIENTO ----------------
@@ -44,22 +62,56 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private IEnumerator DoDash()
+    {
+        canDash = false;
+        isDashing = true;
+
+        if (dashTrailEffect != null)
+        {
+            dashTrailEffect.SetActive(true);
+            dashTrailEffect.GetComponent<ParticleSystem>().Play();
+        }
+
+        dashDirection = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
+        if (dashDirection == Vector3.zero)
+        {
+            dashDirection = transform.forward;
+        }
+
+        animator.SetTrigger("Dash"); 
+
+        float elapsed = 0f;
+        while (elapsed < dashDuration)
+        {
+            controller.Move(dashDirection * dashSpeed * Time.deltaTime);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        isDashing = false;
+
+        if (dashTrailEffect != null)
+        {
+            dashTrailEffect.SetActive(false);
+        }
+
+        yield return new WaitForSeconds(dashCooldown);
+        canDash = true;
+    }
+
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Enemy"))
         {
             EnemyDummy enemy = other.GetComponent<EnemyDummy>();
-            if (enemy != null)
-            {
-                enemy.TakeDamage(attackDamage);
-                Debug.Log($"⚔️ Golpeaste a {other.name} e hiciste {attackDamage} de daño.");
-            }
         }
     }
 
     void HandleMovement()
     {
-        if (!canMove) return;
+        if (!canMove || isDashing) return;
 
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
@@ -125,7 +177,7 @@ public class PlayerController : MonoBehaviour
     // ---------------- GRAVEDAD ----------------
     void ApplyGravity()
     {
-        if (!controller.enabled) return;
+        if (!controller.enabled || isDashing) return;
 
         if (!controller.isGrounded)
         {
@@ -156,5 +208,17 @@ public class PlayerController : MonoBehaviour
             espadaActual.transform.localRotation = Quaternion.Euler(-60, 190, 110);
             espadaActual.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
         }
+    }
+
+    public void QuitarEspada()
+    {
+        if (espadaActual != null)
+        {
+            Destroy(espadaActual);
+            espadaActual = null;
+        }
+
+        tieneEspada = false;
+        animator.SetBool("TieneEspada", false);
     }
 }
