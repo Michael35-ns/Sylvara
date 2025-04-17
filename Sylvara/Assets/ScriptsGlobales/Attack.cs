@@ -50,7 +50,7 @@ public class Attack : MonoBehaviour
         {
             if (col.gameObject == owner) continue;
 
-            HealthSystem health = col.GetComponent<HealthSystem>();
+            HealthSystem health = col.GetComponentInParent<HealthSystem>();
             if (health != null)
             {
                 health.TakeDamage(damage);

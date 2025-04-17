@@ -11,14 +11,14 @@ GameObject:
   - component: {fileID: 7479195156750011262}
   - component: {fileID: 4691347976644020978}
   - component: {fileID: 4424930805856394295}
-  - component: {fileID: 4019456937530363934}
-  m_Layer: 7
+  - component: {fileID: 1188683831375329155}
+  m_Layer: 9
   m_Name: Hitbox
-  m_TagString: Player
+  m_TagString: AttackHitbox
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &7479195156750011262
 Transform:
   m_ObjectHideFlags: 0
@@ -27,8 +27,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 199026240949129440}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.038, z: 0.288}
-  m_LocalScale: {x: 0.7312307, y: 0.6930447, z: 0.66486526}
+  m_LocalPosition: {x: 0, y: 1.038, z: 0.51}
+  m_LocalScale: {x: 1.8679576, y: 0.92968386, z: 1.0904455}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4917888846056525266}
@@ -66,7 +66,7 @@ MonoBehaviour:
   attackableLayers:
     serializedVersion: 2
     m_Bits: 64
---- !u!54 &4019456937530363934
+--- !u!54 &1188683831375329155
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -6428,6 +6428,7 @@ GameObject:
   - component: {fileID: 5558862978383350023}
   - component: {fileID: 2691115238190183627}
   - component: {fileID: 8932821944633627704}
+  - component: {fileID: 1441561059546301847}
   m_Layer: 7
   m_Name: CowboyRio_Unity
   m_TagString: Player
@@ -6571,6 +6572,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   healthFill: {fileID: 0}
 --- !u!136 &8932821944633627704
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5725211428315354984}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.3
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}
+--- !u!136 &1441561059546301847
 CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
