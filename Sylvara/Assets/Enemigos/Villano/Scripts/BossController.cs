@@ -3,31 +3,35 @@ using UnityEngine;
 
 public class BossController : MonoBehaviour
 {
+    [Header("Movimiento")]
     public float walkSpeed = 3f;
     public float runSpeed = 6f;
     public float safeDistance = 8f;
     public float teleportDistance = 6f;
-
-    private Transform player;
-    private CharacterController controller;
-    private Animator animator;
-
-    private bool isCasting = false;
-    private bool isAttacking = false;
-    private float attackCooldownTimer;
-    private HealthSystem healthSystem;
-
 
     [Header("Ataques del Jefe")]
     public DashKick dashKick;
     public FireballAttack fireballAttack;
     public NukeAttack nukeAttack;
     public DeathRayAttack deathRayAttack;
+    public BulletHellAttack bulletHellAttack;
 
-    private bool usedDeathRay = false;
-
-    [Header("Efectos del Jefe")]
+    [Header("Efectos")]
     public GameObject teleportPuffEffect;
+
+    private Transform player;
+    private CharacterController controller;
+    private Animator animator;
+    private HealthSystem healthSystem;
+    [SerializeField] private BossHealthBar bossHealthBar;
+
+
+    private bool isCasting = false;
+    private bool isAttacking = false;
+    private bool usedDeathRay = false;
+    private bool isPhaseTwo = false;
+
+    private float attackCooldownTimer;
 
     void Start()
     {
@@ -36,6 +40,7 @@ public class BossController : MonoBehaviour
         animator = GetComponent<Animator>();
         healthSystem = GetComponent<HealthSystem>();
         attackCooldownTimer = Random.Range(4f, 7f);
+        bossHealthBar.SetBoss(healthSystem);
     }
 
     void Update()
@@ -43,8 +48,9 @@ public class BossController : MonoBehaviour
         if (player == null) return;
 
         attackCooldownTimer -= Time.deltaTime;
+        CheckPhase();
 
-        if (isAttacking || dashKick.IsDashing() || nukeAttack.IsCasting())
+        if (isAttacking || dashKick.IsDashing() || nukeAttack.IsCasting() || deathRayAttack.IsCasting())
         {
             SetAnim("Idle");
             return;
@@ -52,56 +58,101 @@ public class BossController : MonoBehaviour
 
         if (attackCooldownTimer <= 0f)
         {
-            // 🔥 DeathRay tiene prioridad si no se ha usado y la vida está baja
-            if (healthSystem.GetHealth() / healthSystem.maxHealth <= 0.3f && !usedDeathRay)
-            {
-                usedDeathRay = true;
-                isAttacking = true;
-                SetCasting(true);
-                deathRayAttack.StartDeathRay(() =>
-                {
-                    isAttacking = false;
-                    SetCasting(false);
-                    attackCooldownTimer = Random.Range(4f, 7f);
-                });
-                return;
-            }
+            TryAttack();
+            return;
+        }
 
-            // 🎲 Elegimos ataque aleatorio
-            isAttacking = true;
-            int random = Random.Range(0, 100);
-            if (random < 60)
+        UpdateMovementAndAnimation();
+    }
+
+    void CheckPhase()
+    {
+        float healthRatio = healthSystem.GetHealth() / healthSystem.maxHealth;
+        bool lowHealth = healthRatio <= 0.45f;
+
+        if (!isPhaseTwo && lowHealth)
+        {
+            isPhaseTwo = true;
+            walkSpeed *= 1.5f;
+            runSpeed *= 1.5f;
+        }
+    }
+
+    void TryAttack()
+    {
+        isAttacking = true;
+
+        if (isPhaseTwo && !usedDeathRay)
+        {
+            usedDeathRay = true;
+            SetCasting(true);
+            deathRayAttack.StartDeathRay(() =>
             {
-                fireballAttack.CastFireball(() =>
-                {
-                    isAttacking = false;
-                    attackCooldownTimer = Random.Range(4f, 7f);
-                });
-            }
-            else if (random < 85)
+                FinishAttackWithCastReset();
+            });
+            return;
+        }
+
+        float rng = Random.Range(0f, 100f);
+
+        if (!isPhaseTwo)
+        {
+            if (rng < 50f)
+                fireballAttack.CastFireball(FinishAttack);
+            else if (rng < 75f)
+                dashKick.StartDash(FinishAttack);
+            else if (rng < 95f)
             {
-                dashKick.StartDash(() =>
-                {
-                    isAttacking = false;
-                    attackCooldownTimer = Random.Range(4f, 7f);
-                });
+                SetCasting(true);
+                nukeAttack.StartNuke(FinishAttackWithCastReset);
             }
             else
             {
                 SetCasting(true);
-                nukeAttack.StartNuke(() =>
-                {
-                    isAttacking = false;
-                    SetCasting(false);
-                    attackCooldownTimer = Random.Range(4f, 7f);
-                });
+                bulletHellAttack.StartBulletHell(false, FinishAttackWithCastReset);
             }
-
-            return;
         }
+        else
+        {
+            float fireball = 15f;   // Disminuido en 25%
+            float dash = 25f;
+            float nuke = 25f;
+            float bullet = 20f;
+            float deathray = 15f;
 
+            if (rng < dash)
+                dashKick.StartDash(FinishAttack);
+            else if (rng < dash + nuke)
+            {
+                SetCasting(true);
+                nukeAttack.StartNuke(FinishAttackWithCastReset);
+            }
+            else if (rng < dash + nuke + bullet)
+            {
+                SetCasting(true);
+                bulletHellAttack.StartBulletHell(true, FinishAttackWithCastReset);
+            }
+            else if (rng < dash + nuke + bullet + deathray)
+            {
+                SetCasting(true);
+                deathRayAttack.StartDeathRay(FinishAttackWithCastReset);
+            }
+            else
+                fireballAttack.CastFireball(FinishAttack);
+        }
+    }
 
-        UpdateMovementAndAnimation();
+    void FinishAttack()
+    {
+        isAttacking = false;
+        attackCooldownTimer = isPhaseTwo ? Random.Range(1f, 3f) : Random.Range(4f, 7f);
+    }
+
+    void FinishAttackWithCastReset()
+    {
+        isAttacking = false;
+        SetCasting(false);
+        attackCooldownTimer = isPhaseTwo ? Random.Range(1f, 3f) : Random.Range(4f, 7f);
     }
 
     public void SetCasting(bool value)
@@ -120,17 +171,17 @@ public class BossController : MonoBehaviour
         float distance = Vector3.Distance(transform.position, player.position);
         Vector3 direction = Vector3.zero;
 
-        const float tooCloseDistance = 3f;
-        const float chaseDistance = 15f;
+        const float tooClose = 3f;
+        const float chase = 15f;
         const float buffer = 0.5f;
 
-        if (distance < tooCloseDistance)
+        if (distance < tooClose)
         {
             TeleportAwayFromPlayer();
             SetAnim("Idle");
             return;
         }
-        else if (distance > chaseDistance)
+        else if (distance > chase)
         {
             direction = (player.position - transform.position).normalized;
             Move(direction, runSpeed);
@@ -148,10 +199,7 @@ public class BossController : MonoBehaviour
             Move(direction, walkSpeed);
 
             float angle = Vector3.Angle(transform.forward, direction);
-            if (angle > 135f)
-                SetAnim("WalkingBackwards");
-            else
-                SetAnim("Walking");
+            SetAnim(angle > 135f ? "WalkingBackwards" : "Walking");
         }
         else
         {
@@ -184,16 +232,15 @@ public class BossController : MonoBehaviour
         if (isCasting) return;
 
         float angle = Random.Range(0f, 360f);
-        Vector3 randomDirection = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), 0, Mathf.Sin(angle * Mathf.Deg2Rad)).normalized;
-
-        Vector3 newPosition = player.position + randomDirection * teleportDistance;
-        newPosition.y = transform.position.y;
+        Vector3 direction = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), 0, Mathf.Sin(angle * Mathf.Deg2Rad)).normalized;
+        Vector3 newPos = player.position + direction * teleportDistance;
+        newPos.y = transform.position.y;
 
         if (teleportPuffEffect != null)
             Instantiate(teleportPuffEffect, transform.position, Quaternion.identity);
 
         controller.enabled = false;
-        transform.position = newPosition;
+        transform.position = newPos;
         controller.enabled = true;
 
         if (teleportPuffEffect != null)
