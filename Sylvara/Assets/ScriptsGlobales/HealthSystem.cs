@@ -16,6 +16,9 @@ public class HealthSystem : MonoBehaviour
     private Animator animator;
     private CharacterController controller;
 
+    private Coroutine invulRoutine;
+
+
     void Start()
     {
         currentHealth = maxHealth;
@@ -33,18 +36,15 @@ public class HealthSystem : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+
         if (isDead || isInvulnerable) return;
 
         float damageTaken = Mathf.Max(damage - defense, 1);
         currentHealth -= damageTaken;
-
         currentHealth = Mathf.Max(currentHealth, 0);
-
 
         if (playerUI != null)
             playerUI.UpdateHealth(currentHealth, maxHealth);
-
-        Debug.Log($"⚠️ {gameObject.name} recibió {damageTaken} de daño. Vida restante: {currentHealth}");
 
         if (currentHealth <= 0)
         {
@@ -53,7 +53,11 @@ public class HealthSystem : MonoBehaviour
         else
         {
             animator.SetTrigger("Hurt");
-            StartCoroutine(Invulnerability());
+
+            if (invulRoutine != null)
+                StopCoroutine(invulRoutine);
+
+            invulRoutine = StartCoroutine(Invulnerability());
         }
     }
 

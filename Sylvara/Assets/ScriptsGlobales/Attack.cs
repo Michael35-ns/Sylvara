@@ -58,10 +58,6 @@ public class Attack : MonoBehaviour
             }
         }
 
-        Debug.Log(hits.Count > 0
-            ? $"🔥 {owner.name} golpeó a: {string.Join(", ", hits)}"
-            : "💨 El ataque no golpeó a nadie.");
-
         Invoke(nameof(DisableHitbox), activeTime);
     }
 

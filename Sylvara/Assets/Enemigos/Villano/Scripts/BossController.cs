@@ -25,6 +25,10 @@ public class BossController : MonoBehaviour
     private HealthSystem healthSystem;
     [SerializeField] private BossHealthBar bossHealthBar;
 
+    [Header("Arena")]
+    public Transform arenaCenter;
+
+
 
     private bool isCasting = false;
     private bool isAttacking = false;
@@ -41,6 +45,15 @@ public class BossController : MonoBehaviour
         healthSystem = GetComponent<HealthSystem>();
         attackCooldownTimer = Random.Range(4f, 7f);
         bossHealthBar.SetBoss(healthSystem);
+        bulletHellAttack.arenaCenter = arenaCenter;
+        deathRayAttack.arenaCenter = arenaCenter;
+    }
+
+    public void ForceMoveTo(Vector3 position)
+    {
+        Vector3 direction = (position - transform.position).normalized;
+        Move(direction, walkSpeed);
+        RotateTowards(position);
     }
 
     void Update()

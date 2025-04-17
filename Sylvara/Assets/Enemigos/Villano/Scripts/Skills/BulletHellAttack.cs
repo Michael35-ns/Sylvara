@@ -6,6 +6,7 @@ public class BulletHellAttack : MonoBehaviour
     public GameObject bulletPrefab;
     public Transform spawnCenter;
     public GameObject chargeEffectPrefab;
+    public Transform arenaCenter;
 
     public int bulletsPerWave = 24;
     public float bulletSpeedFast = 12f;
@@ -46,15 +47,17 @@ public class BulletHellAttack : MonoBehaviour
 
         animator.SetTrigger("CastBulletHell");
 
-        // ⏺️ Instanciar efecto visual si existe
         if (chargeEffectPrefab && spawnCenter)
         {
             Instantiate(chargeEffectPrefab, spawnCenter.position, Quaternion.identity, transform);
         }
 
-        controller.enabled = false;
-        transform.position = new Vector3(0, 1, 0);
-        controller.enabled = true;
+        if (arenaCenter != null)
+        {
+            controller.enabled = false;
+            transform.position = new Vector3(arenaCenter.position.x, transform.position.y, arenaCenter.position.z);
+            controller.enabled = true;
+        }
 
         while (Time.time < endTime)
         {
