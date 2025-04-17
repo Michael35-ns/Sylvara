@@ -18,12 +18,16 @@ public class HealthSystem : MonoBehaviour
 
     private Coroutine invulRoutine;
 
+    // EVENTO para notificar muerte
+    public delegate void DeathDelegate();
+    public event DeathDelegate OnDeath;
 
     void Start()
     {
         currentHealth = maxHealth;
         if (playerUI != null)
             playerUI.UpdateHealth(currentHealth, maxHealth);
+
         animator = GetComponent<Animator>();
         controller = GetComponent<CharacterController>();
     }
@@ -33,10 +37,8 @@ public class HealthSystem : MonoBehaviour
         isInvulnerable = value;
     }
 
-
     public void TakeDamage(float damage)
     {
-
         if (isDead || isInvulnerable) return;
 
         float damageTaken = Mathf.Max(damage - defense, 1);
@@ -73,7 +75,12 @@ public class HealthSystem : MonoBehaviour
             controller.enabled = false;
         }
 
-        GetComponent<PlayerController>().enabled = false;
+        var playerController = GetComponent<PlayerController>();
+        if (playerController != null)
+            playerController.enabled = false;
+
+        // Lanzar evento a suscriptores
+        OnDeath?.Invoke();
 
         StartCoroutine(DisableAfterDeath());
     }

@@ -8,12 +8,15 @@ public class MushroomController : MonoBehaviour
     public float detectionRange = 10f;
     public float attackRange = 3f;
     public float moveSpeed = 2f;
+    public float attackDamage = 20f;
+    public float attackCooldown = 4f;
 
     private Animator animator;
     private NavMeshAgent agent;
     private bool isAngry = false;
     private bool isSensing = false;
     private bool isAttacking = false;
+    private bool canAttack = true;
 
     private HealthSystem healthSystem;
 
@@ -40,7 +43,7 @@ public class MushroomController : MonoBehaviour
             agent.speed = moveSpeed;
 
         if (healthSystem != null)
-            healthSystem.OnDeath += OnDeath;  // suscripción al evento
+            healthSystem.OnDeath += OnDeath;
     }
 
     void Update()
@@ -70,9 +73,8 @@ public class MushroomController : MonoBehaviour
                 }
                 ChasePlayer();
             }
-            else if (!isAttacking)
+            else if (!isAttacking && canAttack)
             {
-                Debug.Log("En rango de ataque, iniciando AttackPlayer()");
                 AttackPlayer();
             }
         }
@@ -103,23 +105,41 @@ public class MushroomController : MonoBehaviour
     void AttackPlayer()
     {
         isAttacking = true;
+        canAttack = false;
+
         if (agent != null) agent.isStopped = true;
 
         if (animator != null)
         {
             int attackType = Random.Range(0, 2);
-            Debug.Log("Disparando animación de ataque: " + (attackType == 0 ? "Mushroom_Attack01Angry" : "Mushroom_Attack02Angry"));
-
             animator.SetTrigger(attackType == 0 ? "Mushroom_Attack01Angry" : "Mushroom_Attack02Angry");
         }
 
+        StartCoroutine(DealDamageWithDelay(0.5f));  // Asumiendo que el golpe impacta al medio segundo de la animación
         StartCoroutine(ResetAttackCooldown());
+    }
+
+    IEnumerator DealDamageWithDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (player != null)
+        {
+            HealthSystem playerHealth = player.GetComponent<HealthSystem>();
+
+            if (playerHealth != null && !playerHealth.isDead)
+            {
+                playerHealth.TakeDamage(attackDamage);
+                Debug.Log($"🍄 El hongo atacó al jugador y le hizo {attackDamage} de daño.");
+            }
+        }
     }
 
     IEnumerator ResetAttackCooldown()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(attackCooldown);
         isAttacking = false;
+        canAttack = true;
     }
 
     void SensePlayer()
@@ -148,11 +168,8 @@ public class MushroomController : MonoBehaviour
 
         healthSystem.TakeDamage(damage);
 
-        if (!healthSystem.isDead)
-        {
-            if (animator != null)
-                animator.SetTrigger("Mushroom_GetHit");
-        }
+        if (!healthSystem.isDead && animator != null)
+            animator.SetTrigger("Mushroom_GetHit");
     }
 
     private void OnDeath()
@@ -178,4 +195,5 @@ public class MushroomController : MonoBehaviour
         Destroy(gameObject, 3f);
     }
 }
+
 

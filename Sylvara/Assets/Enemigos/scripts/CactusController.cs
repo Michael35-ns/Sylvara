@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -8,12 +8,15 @@ public class CactusController : MonoBehaviour
     public float detectionRange = 10f;
     public float attackRange = 2f;
     public float moveSpeed = 2f;
+    public float attackDamage = 15f;
+    public float attackCooldown = 3f;
 
     private Animator animator;
     private NavMeshAgent agent;
     private bool isAngry = false;
     private bool isSensing = false;
     private bool isAttacking = false;
+    private bool canAttack = true;
 
     private HealthSystem healthSystem;
 
@@ -33,7 +36,7 @@ public class CactusController : MonoBehaviour
             if (playerObj != null)
                 player = playerObj.transform;
             else
-                Debug.LogError("No se encontr� GameObject con tag 'Player'. Asigna manualmente en el Inspector.");
+                Debug.LogError("No se encontró GameObject con tag 'Player'. Asigna manualmente en el Inspector.");
         }
 
         if (agent != null)
@@ -53,11 +56,8 @@ public class CactusController : MonoBehaviour
         if (!isAngry && distanceToPlayer <= detectionRange)
         {
             isAngry = true;
-            if (animator != null)
-            {
-                animator.SetTrigger("Cactus_IdlePlantToBattle");
-                StartCoroutine(EnterBattleIdle());
-            }
+            animator?.SetTrigger("Cactus_IdlePlantToBattle");
+            StartCoroutine(EnterBattleIdle());
         }
 
         if (isAngry)
@@ -65,12 +65,11 @@ public class CactusController : MonoBehaviour
             if (distanceToPlayer > attackRange)
             {
                 if (!isSensing && !isAttacking)
-                {
                     SensePlayer();
-                }
+
                 ChasePlayer();
             }
-            else if (!isAttacking)
+            else if (!isAttacking && canAttack)
             {
                 AttackPlayer();
             }
@@ -80,7 +79,6 @@ public class CactusController : MonoBehaviour
     IEnumerator EnterBattleIdle()
     {
         yield return new WaitForSeconds(1f);
-        // Se asume que la animaci�n pasa a IdleBattle sola.
     }
 
     void ChasePlayer()
@@ -103,6 +101,8 @@ public class CactusController : MonoBehaviour
     void AttackPlayer()
     {
         isAttacking = true;
+        canAttack = false;
+
         if (agent != null) agent.isStopped = true;
 
         if (animator != null)
@@ -111,13 +111,30 @@ public class CactusController : MonoBehaviour
             animator.SetTrigger(attackType == 0 ? "Cactus_Attack01" : "Cactus_Attack02");
         }
 
+        StartCoroutine(DealDamageWithDelay(0.5f));  // Ajusta el tiempo según tu animación.
         StartCoroutine(ResetAttackCooldown());
+    }
+
+    IEnumerator DealDamageWithDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (player != null)
+        {
+            HealthSystem playerHealth = player.GetComponent<HealthSystem>();
+            if (playerHealth != null && !playerHealth.isDead)
+            {
+                playerHealth.TakeDamage(attackDamage);
+                Debug.Log($"🌵 El cactus atacó al jugador y le hizo {attackDamage} de daño.");
+            }
+        }
     }
 
     IEnumerator ResetAttackCooldown()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(attackCooldown);
         isAttacking = false;
+        canAttack = true;
     }
 
     void SensePlayer()
@@ -150,10 +167,7 @@ public class CactusController : MonoBehaviour
         healthSystem.TakeDamage(damage);
 
         if (!healthSystem.isDead)
-        {
-            if (animator != null)
-                animator.SetTrigger("Cactus_GetHit");
-        }
+            animator?.SetTrigger("Cactus_GetHit");
     }
 
     private void OnDeath()
@@ -179,6 +193,5 @@ public class CactusController : MonoBehaviour
         Destroy(gameObject, 3f);
     }
 }
-
 
 

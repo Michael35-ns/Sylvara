@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -8,12 +8,15 @@ public class SkeletonController : MonoBehaviour
     public float detectionRange = 10f;
     public float attackRange = 3f;
     public float moveSpeed = 2f;
+    public float attackDamage = 20f;  // Daño del ataque
+    public float attackCooldown = 4f;  // Enfriamiento entre ataques
 
     private Animator animator;
     private NavMeshAgent agent;
     private bool isAngry = false;
     private bool isSensing = false;
     private bool isAttacking = false;
+    private bool canAttack = true;
 
     private HealthSystem healthSystem;
 
@@ -33,14 +36,14 @@ public class SkeletonController : MonoBehaviour
             if (playerObj != null)
                 player = playerObj.transform;
             else
-                Debug.LogError("No se encontr� GameObject con tag 'Player'. Asigna manualmente en el Inspector.");
+                Debug.LogError("No se encontró GameObject con tag 'Player'. Asigna manualmente en el Inspector.");
         }
 
         if (agent != null)
             agent.speed = moveSpeed;
 
         if (healthSystem != null)
-            healthSystem.OnDeath += OnDeath;  // suscripci�n al evento
+            healthSystem.OnDeath += OnDeath;  // Suscripción al evento de muerte
     }
 
     void Update()
@@ -70,9 +73,8 @@ public class SkeletonController : MonoBehaviour
                 }
                 ChasePlayer();
             }
-            else if (!isAttacking)
+            else if (!isAttacking && canAttack)
             {
-                Debug.Log("En rango de ataque, iniciando AttackPlayer()");
                 AttackPlayer();
             }
         }
@@ -103,23 +105,41 @@ public class SkeletonController : MonoBehaviour
     void AttackPlayer()
     {
         isAttacking = true;
+        canAttack = false;
+
         if (agent != null) agent.isStopped = true;
 
         if (animator != null)
         {
             int attackType = Random.Range(0, 2);
-            Debug.Log("Disparando animaci�n de ataque: " + (attackType == 0 ? "Strike_1" : "Strike_2"));
-
             animator.SetTrigger(attackType == 0 ? "Strike_1" : "Strike_2");
         }
 
+        StartCoroutine(DealDamageWithDelay(0.5f));  // Retraso para aplicar el daño
         StartCoroutine(ResetAttackCooldown());
+    }
+
+    IEnumerator DealDamageWithDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (player != null)
+        {
+            HealthSystem playerHealth = player.GetComponent<HealthSystem>();
+
+            if (playerHealth != null && !playerHealth.isDead)
+            {
+                playerHealth.TakeDamage(attackDamage);  // Aplica el daño al jugador
+                Debug.Log($"💀 El esqueleto atacó al jugador y le hizo {attackDamage} de daño.");
+            }
+        }
     }
 
     IEnumerator ResetAttackCooldown()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(attackCooldown);
         isAttacking = false;
+        canAttack = true;
     }
 
     void SensePlayer()

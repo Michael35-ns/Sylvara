@@ -1,6 +1,6 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UI; // Necesario para usar UI
+using TMPro;
 
 public class NpcController : MonoBehaviour
 {
@@ -8,9 +8,9 @@ public class NpcController : MonoBehaviour
     public Animator animator;
     private bool jugadorCerca = false;
 
-    public GameObject panelDialogo; // Referencia al panel que contiene el texto
-    public Text textoDialogo; // Texto que se mostrará en el panel
-    public float duracionDialogo = 3f; // Tiempo que se muestra el mensaje
+    public GameObject panelDialogo;
+    public TextMeshProUGUI textoDialogo;  // <--- cambiado aquí
+    public float duracionDialogo = 3f;
 
     void Start()
     {
@@ -21,7 +21,7 @@ public class NpcController : MonoBehaviour
             animator.Play("Idle");
 
         if (panelDialogo != null)
-            panelDialogo.SetActive(false); // Ocultamos el panel al inicio
+            panelDialogo.SetActive(false);
     }
 
     void Update()
@@ -65,4 +65,3 @@ public class NpcController : MonoBehaviour
         }
     }
 }
-
