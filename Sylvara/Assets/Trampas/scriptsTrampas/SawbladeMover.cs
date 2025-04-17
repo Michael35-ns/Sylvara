@@ -22,17 +22,11 @@ public class SawbladeMover : MonoBehaviour
         // Si no se encuentra, buscar en toda la escena (alternativa)
         if (Sawblade == null)
         {
-            Debug.LogWarning("No se encontró 'Sawblade' como hijo de " + gameObject.name + ". Buscando en la escena...");
             GameObject foundSawblade = GameObject.Find("Sawblade");
 
             if (foundSawblade != null)
             {
                 Sawblade = foundSawblade.transform;
-                Debug.Log("Sawblade encontrado en la escena y asignado correctamente.");
-            }
-            else
-            {
-                Debug.LogError("No se encontró ningún objeto llamado 'Sawblade' en la escena.");
             }
         }
     }

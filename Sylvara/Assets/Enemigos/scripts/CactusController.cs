@@ -147,14 +147,7 @@ public class CactusController : MonoBehaviour
     {
         if (animator != null)
         {
-            animator.SetTrigger("Cactus_SenseSomethingStart");
             yield return new WaitForSeconds(1f);
-
-            animator.SetTrigger("Cactus_SenseSomethingMaint");
-            yield return new WaitForSeconds(1.5f);
-
-            animator.SetTrigger("Cactus_Taunting");
-            yield return new WaitForSeconds(1.5f);
         }
 
         isSensing = false;

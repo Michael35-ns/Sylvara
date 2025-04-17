@@ -58,7 +58,6 @@ public class MushroomController : MonoBehaviour
             isAngry = true;
             if (animator != null)
             {
-                animator.SetTrigger("Mushroom_SenseSomethir");
                 StartCoroutine(EnterBattleIdle());
             }
         }
@@ -97,7 +96,6 @@ public class MushroomController : MonoBehaviour
         if (animator != null)
         {
             bool running = distance > detectionRange * 1.5f;
-            animator.SetBool("isRunning", running);
             animator.SetBool("Mushroom_walkFWDAngry", !running);
         }
     }
@@ -115,7 +113,7 @@ public class MushroomController : MonoBehaviour
             animator.SetTrigger(attackType == 0 ? "Mushroom_Attack01Angry" : "Mushroom_Attack02Angry");
         }
 
-        StartCoroutine(DealDamageWithDelay(0.5f));  // Asumiendo que el golpe impacta al medio segundo de la animación
+        StartCoroutine(DealDamageWithDelay(0.5f));
         StartCoroutine(ResetAttackCooldown());
     }
 
@@ -130,7 +128,6 @@ public class MushroomController : MonoBehaviour
             if (playerHealth != null && !playerHealth.isDead)
             {
                 playerHealth.TakeDamage(attackDamage);
-                Debug.Log($"🍄 El hongo atacó al jugador y le hizo {attackDamage} de daño.");
             }
         }
     }
@@ -152,11 +149,7 @@ public class MushroomController : MonoBehaviour
     {
         if (animator != null)
         {
-            animator.SetTrigger("Mushroom_SenseSomethir");
             yield return new WaitForSeconds(1f);
-
-            animator.SetTrigger("Mushroom_Taunting");
-            yield return new WaitForSeconds(1.5f);
         }
 
         isSensing = false;

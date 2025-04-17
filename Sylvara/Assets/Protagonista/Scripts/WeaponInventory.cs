@@ -36,7 +36,6 @@ public class WeaponInventory : MonoBehaviour
         var data = weaponSlots[index].weaponData;
         if (data == null)
         {
-            Debug.LogWarning("❌ No hay arma en este slot.");
             player.QuitarEspada();
             UpdateSlotVisuals();
             return;
@@ -47,8 +46,6 @@ public class WeaponInventory : MonoBehaviour
         player.attack.damage = data.damage;
         player.ObtenerEspada();
         UpdateSlotVisuals();
-
-        Debug.Log($"🗡️ Equipaste: {data.weaponName}");
     }
 
 
