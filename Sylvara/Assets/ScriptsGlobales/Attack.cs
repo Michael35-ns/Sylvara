@@ -1,15 +1,15 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class Attack : MonoBehaviour
 {
+    [Header("Parámetros del Ataque")]
     public float damage = 20f;
     public float attackRadius = 1.5f;
     public float attackRange = 2f;
     public float activeTime = 0.1f;
-    [SerializeField] private LayerMask attackableLayers;
 
+    [SerializeField] private LayerMask attackableLayers;
 
     private GameObject owner;
     private bool attackActive = false;
@@ -29,39 +29,36 @@ public class Attack : MonoBehaviour
 
     public void PerformAttack()
     {
-        if (attackActive) return;
+        if (attackActive || owner == null) return;
+
         attackActive = true;
 
         Vector3 attackCenter = owner.transform.position + owner.transform.forward * (attackRange * 0.5f);
-        Quaternion attackRotation = Quaternion.LookRotation(owner.transform.forward);
+        Vector3 boxHalfSize = new Vector3(attackRadius, 1f, attackRange * 0.5f);
 
-        Vector3 boxSize = new Vector3(attackRadius * 2, 2f, attackRange);
-        Collider[] hitEnemies = Physics.OverlapBox(attackCenter, new Vector3(attackRadius, 1f, attackRadius), owner.transform.rotation, attackableLayers, QueryTriggerInteraction.Collide);
+        Collider[] hitColliders = Physics.OverlapBox(
+            attackCenter,
+            boxHalfSize,
+            owner.transform.rotation,
+            attackableLayers,
+            QueryTriggerInteraction.Collide
+        );
 
-        List<string> hitNames = new List<string>();
+        List<string> hits = new List<string>();
 
-        foreach (Collider enemy in hitEnemies)
+        foreach (Collider col in hitColliders)
         {
-            if (enemy.gameObject == owner) continue;
+            if (col.gameObject == owner) continue;
 
-            HealthSystem health = enemy.GetComponent<HealthSystem>();
+            HealthSystem health = col.GetComponentInParent<HealthSystem>();
             if (health != null)
             {
                 health.TakeDamage(damage);
-                hitNames.Add(enemy.gameObject.name);
+                hits.Add(col.gameObject.name);
             }
         }
 
-        if (hitNames.Count > 0)
-        {
-            Debug.Log($"🔥 {owner.name} golpeó a: {string.Join(", ", hitNames)}");
-        }
-        else
-        {
-            Debug.Log("💨 El ataque no golpeó a nadie.");
-        }
-
-        Invoke("DisableHitbox", activeTime);
+        Invoke(nameof(DisableHitbox), activeTime);
     }
 
     private void DisableHitbox()
@@ -71,16 +68,15 @@ public class Attack : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (owner == null || !attackActive) return;
+        if (!attackActive || owner == null) return;
 
         Gizmos.color = Color.red;
-        Vector3 attackCenter = owner.transform.position + owner.transform.forward * (attackRange * 0.5f);
-        Quaternion attackRotation = Quaternion.LookRotation(owner.transform.forward);
-        Vector3 boxSize = new Vector3(attackRadius * 2, 2f, attackRange);
+        Vector3 center = owner.transform.position + owner.transform.forward * (attackRange * 0.5f);
+        Quaternion rotation = Quaternion.LookRotation(owner.transform.forward);
+        Vector3 size = new Vector3(attackRadius * 2, 2f, attackRange);
 
-        Matrix4x4 rotationMatrix = Matrix4x4.TRS(attackCenter, attackRotation, Vector3.one);
-        Gizmos.matrix = rotationMatrix;
-        Gizmos.DrawWireCube(Vector3.zero, boxSize);
+        Matrix4x4 matrix = Matrix4x4.TRS(center, rotation, Vector3.one);
+        Gizmos.matrix = matrix;
+        Gizmos.DrawWireCube(Vector3.zero, size);
     }
-
 }

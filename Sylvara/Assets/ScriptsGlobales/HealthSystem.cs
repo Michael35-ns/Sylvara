@@ -16,8 +16,8 @@ public class HealthSystem : MonoBehaviour
     private Animator animator;
     private CharacterController controller;
 
-    public delegate void DeathEvent();
-    public event DeathEvent OnDeath;
+    private Coroutine invulRoutine;
+
 
     void Start()
     {
@@ -26,7 +26,6 @@ public class HealthSystem : MonoBehaviour
             playerUI.UpdateHealth(currentHealth, maxHealth);
         animator = GetComponent<Animator>();
         controller = GetComponent<CharacterController>();
-        // StartCoroutine(RegenerateHealth());
     }
 
     public void SetInvulnerable(bool value)
@@ -37,17 +36,15 @@ public class HealthSystem : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+
         if (isDead || isInvulnerable) return;
 
         float damageTaken = Mathf.Max(damage - defense, 1);
         currentHealth -= damageTaken;
         currentHealth = Mathf.Max(currentHealth, 0);
 
-
         if (playerUI != null)
             playerUI.UpdateHealth(currentHealth, maxHealth);
-
-        Debug.Log($"⚠️ {gameObject.name} recibió {damageTaken} de daño. Vida restante: {currentHealth}");
 
         if (currentHealth <= 0)
         {
@@ -55,10 +52,12 @@ public class HealthSystem : MonoBehaviour
         }
         else
         {
-            if (animator != null)
-                animator.SetTrigger("Hurt");
+            animator.SetTrigger("Hurt");
 
-            StartCoroutine(Invulnerability());
+            if (invulRoutine != null)
+                StopCoroutine(invulRoutine);
+
+            invulRoutine = StartCoroutine(Invulnerability());
         }
     }
 
@@ -70,14 +69,11 @@ public class HealthSystem : MonoBehaviour
         animator.SetBool("Dead", true);
 
         if (controller != null)
+        {
             controller.enabled = false;
+        }
 
-        PlayerController playerController = GetComponent<PlayerController>();
-        if (playerController != null)
-            playerController.enabled = false;
-
-        if (OnDeath != null)  // Corrección aquí
-            OnDeath.Invoke();
+        GetComponent<PlayerController>().enabled = false;
 
         StartCoroutine(DisableAfterDeath());
     }
@@ -100,8 +96,9 @@ public class HealthSystem : MonoBehaviour
         if (isDead) return;
 
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+        if (playerUI != null)
+            playerUI.UpdateHealth(currentHealth, maxHealth);
     }
 
     public float GetHealth() => currentHealth;
 }
-

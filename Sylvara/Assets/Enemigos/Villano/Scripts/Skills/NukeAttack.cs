@@ -95,8 +95,10 @@ public class NukeAttack : MonoBehaviour
 
     public bool CanTakeHit()
     {
-        if (hasTakenHit) return false;
+        if (!isCasting || hasTakenHit) return false;
+
         hasTakenHit = true;
         return true;
     }
+
 }

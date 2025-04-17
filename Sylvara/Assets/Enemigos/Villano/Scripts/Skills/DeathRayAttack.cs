@@ -10,6 +10,8 @@ public class DeathRayAttack : MonoBehaviour
     public Transform raySpawnPoint;
     public Transform fireballSpawnPoint;
     public Transform indicatorFollowPoint;
+    public Transform arenaCenter;
+
 
     public float chargeDuration = 5f;
     public float rayDuration = 15f;
@@ -50,9 +52,12 @@ public class DeathRayAttack : MonoBehaviour
     {
         isCasting = true;
 
-        controller.enabled = false;
-        transform.position = new Vector3(0, 1, 0);
-        controller.enabled = true;
+        if (arenaCenter != null)
+        {
+            controller.enabled = false;
+            transform.position = new Vector3(arenaCenter.position.x, transform.position.y, arenaCenter.position.z);
+            controller.enabled = true;
+        }
 
         animator.SetTrigger("CastDeathRay");
 

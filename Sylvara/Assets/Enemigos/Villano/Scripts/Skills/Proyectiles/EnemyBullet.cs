@@ -1,37 +1,25 @@
-ï»¿using UnityEngine;
+using UnityEngine;
 
-public class FireballProjectile : MonoBehaviour
+public class EnemyBullet : MonoBehaviour
 {
     public float speed = 10f;
-    public float damage = 20f;
-    public float lifetime = 5f;
-
-    public GameObject explosionEffect;
-
-    private Transform target;
+    public float lifeTime = 5f;
+    public int damage = 1;
+    public GameObject hitEffect;
 
     void Start()
     {
         Physics.IgnoreLayerCollision(LayerMask.NameToLayer("EnemyProjectile"), LayerMask.NameToLayer("Enemy"));
         Physics.IgnoreLayerCollision(LayerMask.NameToLayer("EnemyProjectile"), LayerMask.NameToLayer("EnemyProjectile"));
         Physics.IgnoreLayerCollision(LayerMask.NameToLayer("EnemyProjectile"), LayerMask.NameToLayer("AttackHitbox"));
-        Destroy(gameObject, lifetime);
-    }
 
-    public void SetTarget(Transform playerTarget, float customSpeed = -1)
-    {
-        target = playerTarget;
-        if (customSpeed > 0) speed = customSpeed;
-        Destroy(gameObject, lifetime);
+        // Autodestrucción tras X segundos
+        Destroy(gameObject, lifeTime);
     }
 
     void Update()
     {
-        if (target == null) return;
-
-        Vector3 dir = (target.position - transform.position).normalized;
-        transform.position += dir * speed * Time.deltaTime;
-        transform.forward = dir;
+        transform.position += transform.forward * speed * Time.deltaTime;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -44,10 +32,9 @@ public class FireballProjectile : MonoBehaviour
                 health.TakeDamage(damage);
             }
         }
-
-        if (explosionEffect != null)
+        if (hitEffect != null)
         {
-            Instantiate(explosionEffect, transform.position, Quaternion.identity);
+            Instantiate(hitEffect, transform.position, Quaternion.identity);
         }
 
         Destroy(gameObject);
