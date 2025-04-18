@@ -92,7 +92,6 @@ public class DashKick : MonoBehaviour
             dashHitbox.enabled = true;
             alreadyHit.Clear();
 
-            // Elegir dirección con zona segura
             Vector3 teleportPosition;
             int attempts = 0;
             do
@@ -104,46 +103,35 @@ public class DashKick : MonoBehaviour
             }
             while (Vector3.Distance(teleportPosition, player.position) < safeZoneRadius && attempts < 10);
 
-            // ⚡ Efecto de salida
             if (dashPortalEffect != null)
                 Instantiate(dashPortalEffect, transform.position, Quaternion.identity);
 
-            // 🔁 Ocultar modelo
             if (modelObject != null)
                 modelObject.SetActive(false);
 
-            yield return new WaitForSeconds(0.3f); // Espera breve antes del teleport
+            yield return new WaitForSeconds(0.3f); 
 
-            // Desactiva el hitbox antes de teleportar
             dashHitbox.enabled = false;
 
-            // Teleport seguro sin dejar el CharacterController apagado
             controller.enabled = false;
             transform.position = teleportPosition;
             controller.enabled = true;
 
-            // Esperar un frame para que el motor de física lo procese
             yield return null;
 
-            // Reactivar el hitbox ahora que está en el lugar correcto
             dashHitbox.enabled = true;
 
-
-            // ⚡ Efecto de entrada
             if (dashPortalEffect != null)
                 Instantiate(dashPortalEffect, transform.position, Quaternion.identity);
 
-            // Reactivar modelo
             if (modelObject != null)
                 modelObject.SetActive(true);
 
-            // Mirar al jugador
             Vector3 lookDir = (player.position - transform.position).normalized;
             lookDir.y = 0;
             if (lookDir.sqrMagnitude > 0.1f)
                 transform.rotation = Quaternion.LookRotation(lookDir);
 
-            // 🟡 Mostrar línea
             if (lineRenderer != null)
             {
                 dashPreviewLine.SetActive(true);
@@ -151,7 +139,6 @@ public class DashKick : MonoBehaviour
                 lineRenderer.SetPosition(1, transform.position + transform.forward * 20f);
             }
 
-            // ⏳ Preview (línea acortándose)
             float previewTime = 0.5f;
             float t = 0f;
             float maxLength = 20f;
@@ -194,6 +181,9 @@ public class DashKick : MonoBehaviour
 
         if (!controller.enabled)
             controller.enabled = true;
+
+        if (healthSystem != null)
+            healthSystem.SetInvulnerable(false);
 
         onDashComplete?.Invoke();
     }

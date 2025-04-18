@@ -391,7 +391,7 @@ AnimatorController:
   m_Name: HectorController
   serializedVersion: 5
   m_AnimatorParameters:
-  - m_Name: dead
+  - m_Name: Dead
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0

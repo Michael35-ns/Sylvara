@@ -18,9 +18,18 @@ public class HealthSystem : MonoBehaviour
 
     private Coroutine invulRoutine;
 
-    // EVENTO para notificar muerte
     public delegate void DeathDelegate();
     public event DeathDelegate OnDeath;
+
+    public enum CharacterType
+    {
+        Player,
+        Enemy,
+        Boss
+    }
+
+    public CharacterType characterType = CharacterType.Enemy;
+
 
     void Start()
     {
@@ -71,19 +80,21 @@ public class HealthSystem : MonoBehaviour
         animator.SetBool("Dead", true);
 
         if (controller != null)
-        {
             controller.enabled = false;
+
+        if (characterType == CharacterType.Player)
+        {
+            GetComponent<PlayerController>().enabled = false;
+            FindObjectOfType<GameUIManager>()?.ShowDefeatScreen();
         }
-
-        var playerController = GetComponent<PlayerController>();
-        if (playerController != null)
-            playerController.enabled = false;
-
-        // Lanzar evento a suscriptores
-        OnDeath?.Invoke();
+        else if (characterType == CharacterType.Boss)
+        {
+            FindObjectOfType<GameUIManager>()?.ShowVictoryScreen();
+        }
 
         StartCoroutine(DisableAfterDeath());
     }
+
 
     private IEnumerator DisableAfterDeath()
     {

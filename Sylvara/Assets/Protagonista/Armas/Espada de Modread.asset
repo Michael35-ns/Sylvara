@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Espada de Modread
   m_EditorClassIdentifier: 
   weaponName: Espada de Modread
-  damage: 25
+  damage: 30
   icon: {fileID: 21300000, guid: 4e5d129b339c5b44898fc61374d8a0e4, type: 3}
   iconSelected: {fileID: 21300000, guid: 0302e276c6152bb4690e6df2c180a129, type: 3}
   weaponPrefab: {fileID: 2470634840418416257, guid: 8ace34a721ca34f9797b83e96f99404f, type: 3}
