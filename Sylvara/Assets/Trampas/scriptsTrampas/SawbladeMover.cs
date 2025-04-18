@@ -11,23 +11,14 @@ public class SawbladeMover : MonoBehaviour
 
     void Start()
     {
-        startPosition = transform.position; // Guarda la posición inicial del padre
+        startPosition = transform.position;
 
-        // Depuración: Mostrar el nombre del objeto padre
-        Debug.Log("Nombre del objeto padre: " + gameObject.name);
-
-        // Buscar el objeto "Sawblade" dentro del padre
+        // Buscar el objeto "Sawblade" dentro del objeto actual
         Sawblade = transform.Find("Sawblade");
 
-        // Si no se encuentra, buscar en toda la escena (alternativa)
         if (Sawblade == null)
         {
-            GameObject foundSawblade = GameObject.Find("Sawblade");
-
-            if (foundSawblade != null)
-            {
-                Sawblade = foundSawblade.transform;
-            }
+            Debug.LogError("No se encontró 'Sawblade' como hijo de " + gameObject.name);
         }
     }
 
@@ -37,7 +28,6 @@ public class SawbladeMover : MonoBehaviour
         float offset = Mathf.PingPong(Time.time * moveSpeed, moveDistance);
         transform.position = startPosition + new Vector3(offset, 0, 0); // Movimiento en X
 
-        // Rotación de la sierra (Sawblade)
         if (Sawblade != null)
         {
             Sawblade.Rotate(Vector3.forward * rotationSpeed * Time.deltaTime, Space.Self);

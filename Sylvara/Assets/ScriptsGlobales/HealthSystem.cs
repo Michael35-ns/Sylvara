@@ -80,6 +80,9 @@ public class HealthSystem : MonoBehaviour
         if (isDead) return;
 
         isDead = true;
+
+        OnDeath?.Invoke();
+
         animator.SetBool("Dead", true);
 
         if (controller != null)

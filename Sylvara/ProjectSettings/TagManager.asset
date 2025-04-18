@@ -6,6 +6,9 @@ TagManager:
   tags:
   - Enemy
   - AttackHitbox
+  - Floor
+  - Trap
+  - Nivel2
   layers:
   - Default
   - TransparentFX
