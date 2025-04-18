@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class SawbladeMover : MonoBehaviour
 {
-    private Transform Sawblade;  // Referencia al objeto Sawblade (hijo)
+    private Transform Sawblade;  
     public float rotationSpeed = 200f;  // Velocidad de rotación
     public float moveSpeed = 3f;        // Velocidad de movimiento
     public float moveDistance = 2f;     // Distancia de movimiento
@@ -24,13 +24,14 @@ public class SawbladeMover : MonoBehaviour
 
     void Update()
     {
-        // Movimiento en línea recta del objeto padre (Traphome_Mid)
-        float offset = Mathf.PingPong(Time.time * moveSpeed, moveDistance);
-        transform.position = startPosition + new Vector3(offset, 0, 0); // Movimiento en X
-
         if (Sawblade != null)
         {
+            // Rotar la sierra
             Sawblade.Rotate(Vector3.forward * rotationSpeed * Time.deltaTime, Space.Self);
+
+            // Mover la sierra en el eje X
+            float offset = Mathf.PingPong(Time.time * moveSpeed, moveDistance);
+            Sawblade.localPosition = new Vector3(offset, Sawblade.localPosition.y, Sawblade.localPosition.z);
         }
     }
 }
