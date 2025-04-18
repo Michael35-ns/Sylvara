@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class GameUIManager : MonoBehaviour
 {
@@ -29,30 +31,35 @@ public class GameUIManager : MonoBehaviour
         Time.timeScale = 1f;
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null && respawnPoint != null)
+        if (player != null)
         {
-            CharacterController cc = player.GetComponent<CharacterController>();
-            if (cc != null) cc.enabled = false;
+            PlayerCheckpoint checkpoint = player.GetComponent<PlayerCheckpoint>();
+            if (checkpoint != null)
+                checkpoint.Respawn();
 
-            player.transform.position = respawnPoint.position;
-
-            if (cc != null) cc.enabled = true;
-
-            // Reset vida
             HealthSystem health = player.GetComponent<HealthSystem>();
             if (health != null)
             {
+                health.ReactivateComponents();
                 health.Heal(health.maxHealth);
-                health.isDead = false;
+                health.SetInvulnerable(true);
+                StartCoroutine(RemoveInvulnerability(health, 2f));
             }
 
             defeatPanel.SetActive(false);
         }
     }
 
+    private IEnumerator RemoveInvulnerability(HealthSystem health, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        health.SetInvulnerable(false);
+    }
+
+
     public void Continue()
     {
         Time.timeScale = 1f;
-        Debug.Log("⚠️ Continúa desde victoria (a definir)");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

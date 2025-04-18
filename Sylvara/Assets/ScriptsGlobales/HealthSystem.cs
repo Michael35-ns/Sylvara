@@ -21,6 +21,9 @@ public class HealthSystem : MonoBehaviour
     public delegate void DeathDelegate();
     public event DeathDelegate OnDeath;
 
+    private Coroutine deathRoutine;
+
+
     public enum CharacterType
     {
         Player,
@@ -92,15 +95,68 @@ public class HealthSystem : MonoBehaviour
             FindObjectOfType<GameUIManager>()?.ShowVictoryScreen();
         }
 
-        StartCoroutine(DisableAfterDeath());
+        if (deathRoutine != null)
+            StopCoroutine(deathRoutine);
+
+        deathRoutine = StartCoroutine(DisableAfterDeath());
     }
 
 
     private IEnumerator DisableAfterDeath()
     {
         yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length + 1f);
-        gameObject.SetActive(false);
+
+        DisableComponents();
+
+        deathRoutine = null;
     }
+
+    public void ReactivateComponents()
+    {
+        if (deathRoutine != null)
+        {
+            StopCoroutine(deathRoutine);
+            deathRoutine = null;
+        }
+
+        var pc = GetComponent<PlayerController>();
+        if (pc != null) pc.enabled = true;
+
+        var cc = GetComponent<CharacterController>();
+        if (cc != null) cc.enabled = true;
+
+        var col = GetComponent<Collider>();
+        if (col != null) col.enabled = true;
+
+        var rb = GetComponent<Rigidbody>();
+        if (rb != null) rb.isKinematic = false;
+
+        isDead = false;
+
+        if (animator != null)
+        {
+            animator.SetBool("Dead", false);
+            animator.Rebind();
+            animator.SetBool("PuedoDarClick", true);
+        }
+    }
+
+
+    private void DisableComponents()
+    {
+        var pc = GetComponent<PlayerController>();
+        if (pc != null) pc.enabled = false;
+
+        var cc = GetComponent<CharacterController>();
+        if (cc != null) cc.enabled = false;
+
+        var col = GetComponent<Collider>();
+        if (col != null) col.enabled = false;
+
+        var rb = GetComponent<Rigidbody>();
+        if (rb != null) rb.isKinematic = true;
+    }
+
 
     private IEnumerator Invulnerability()
     {
@@ -111,9 +167,8 @@ public class HealthSystem : MonoBehaviour
 
     public void Heal(float amount)
     {
-        if (isDead) return;
-
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+
         if (playerUI != null)
             playerUI.UpdateHealth(currentHealth, maxHealth);
     }
