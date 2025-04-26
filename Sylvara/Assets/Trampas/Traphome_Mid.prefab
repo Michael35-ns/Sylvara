@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 7368670371237401714}
   - component: {fileID: 2009144203859687692}
   - component: {fileID: 6706006741043000525}
-  - component: {fileID: 5303943565986118580}
   - component: {fileID: 447898749621208541}
   m_Layer: 0
   m_Name: Sawblade
@@ -131,21 +130,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -318380812313391449, guid: edcc86a903182d0429c0d7b2c727fec0, type: 3}
---- !u!114 &5303943565986118580
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 967021299154405499}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c4f879223115d1948a537dfb0603516b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rotationSpeed: 200
-  moveSpeed: 3
-  moveDistance: 2
 --- !u!114 &447898749621208541
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -171,6 +155,7 @@ GameObject:
   - component: {fileID: 442744041538039738}
   - component: {fileID: 3109034537817411170}
   - component: {fileID: 5813522779107741146}
+  - component: {fileID: 8149679542478739689}
   m_Layer: 0
   m_Name: Traphome_Mid
   m_TagString: Untagged
@@ -258,3 +243,18 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -8980198115151116066, guid: edcc86a903182d0429c0d7b2c727fec0, type: 3}
+--- !u!114 &8149679542478739689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4000979700397969162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4f879223115d1948a537dfb0603516b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotationSpeed: 200
+  moveSpeed: 3
+  moveDistance: 2
